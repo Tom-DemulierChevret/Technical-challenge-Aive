@@ -4,6 +4,7 @@ import './VideoOverlay.scss'
 import { OverlayItem } from './types'
 import { BaseOverItemType } from '../types'
 import * as d3 from 'd3'
+import { BaseType, Selection, Transition } from 'd3'
 
 type VideoOverlayProps = {
   classname?: string
@@ -23,41 +24,86 @@ const VideoOverlay: FunctionComponent<VideoOverlayProps> = ({
 }) => {
   const svgRef = useRef(null)
   const className = cx(classname)
-  const textPadding = 4
 
   useEffect(() => {
-    const selectJoin = (className: string, element: string) =>
+    const textPadding = 4
+
+    const select = (
+      className: string,
+      element: string,
+      transform: (
+        selection: Selection<BaseType, OverlayItem, BaseType, OverlayItem> &
+          Transition<BaseType, OverlayItem, BaseType, OverlayItem>,
+      ) => void,
+    ) =>
       d3
         .select(svgRef.current)
         .select('.overlayContainer')
-        .selectAll<Element, OverlayItem>(`.${className}`)
+        .selectAll<BaseType, OverlayItem>(`.${className}`)
         .data(items, ({ id }) => id)
-        .join(element)
+        .join(
+          (enter) =>
+            enter
+              .append(element)
+              .attr('class', className)
+              .call(
+                transform as (
+                  selection: Selection<
+                    BaseType,
+                    OverlayItem,
+                    BaseType,
+                    OverlayItem
+                  >,
+                ) => void,
+              ),
+          (update) =>
+            update
+              .transition()
+              .duration(180)
+              .ease(d3.easeLinear)
+              .call(
+                transform as (
+                  selection: Transition<
+                    BaseType,
+                    OverlayItem,
+                    BaseType,
+                    OverlayItem
+                  >,
+                ) => void,
+              ),
+          (exit) => exit.remove(),
+        )
         .attr('class', className)
 
-    selectJoin('border', 'rect')
-      .attr('rx', 4)
-      .attr('stroke', (_, index) => colors[index])
-      .attr('x', ({ x }) => x)
-      .attr('y', ({ y }) => y)
-      .attr('width', ({ width }) => width)
-      .attr('height', ({ height }) => height)
+    select('border', 'rect', (selection) =>
+      selection
+        .attr('rx', 4)
+        .attr('stroke', (_, index) => colors[index])
+        .attr('x', ({ x }) => x)
+        .attr('y', ({ y }) => y)
+        .attr('width', ({ width }) => width)
+        .attr('height', ({ height }) => height),
+    )
 
-    selectJoin('textContainer', 'rect')
-      .attr('rx', 4)
-      .attr('fill', (_, index) => colors[index])
-      .attr('x', ({ x }) => x)
-      .attr('y', ({ y }) => y - 20)
-      .attr(
-        'width',
-        ({ type }) => (classLabelMap[type].length + 2) * 8 + textPadding * 2,
-      )
-      .attr('height', 21)
+    select('textContainer', 'rect', (selection) =>
+      selection
+        .attr('rx', 4)
+        .attr('fill', (_, index) => colors[index])
+        .attr('x', ({ x }) => x)
+        .attr('y', ({ y }) => y - 20)
+        .attr(
+          'width',
+          ({ type }) => (classLabelMap[type].length + 2) * 8 + textPadding * 2,
+        )
+        .attr('height', 21),
+    )
 
-    selectJoin('text', 'text')
-      .text(({ type }, index) => `${classLabelMap[type]} ${index + 1}`)
-      .attr('x', ({ x }) => x + textPadding)
-      .attr('y', ({ y }) => y - textPadding)
+    select('text', 'text', (selection) =>
+      selection
+        .text(({ type }, index) => `${classLabelMap[type]} ${index + 1}`)
+        .attr('x', ({ x }) => x + textPadding)
+        .attr('y', ({ y }) => y - textPadding),
+    )
   }, [items])
 
   return (
