@@ -3,7 +3,7 @@ import cx from 'classnames'
 import './VideoPlayer.scss'
 
 type VideoPlayerProps = {
-  classname: string
+  classname?: string
 }
 
 const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({ classname }) => {
