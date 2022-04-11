@@ -8,6 +8,8 @@ type VideoOverlayProps = {
   items?: OverlayItem[]
 }
 
+const colors = ['orange', 'red', 'blue', 'green']
+
 const VideoOverlay: FunctionComponent<VideoOverlayProps> = ({
   classname,
   items = [],
@@ -16,12 +18,19 @@ const VideoOverlay: FunctionComponent<VideoOverlayProps> = ({
 
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg">
-      {items.map(({ id, x, y, width, height, label }) => (
+      {items.map(({ id, x, y, width, height, label }, index) => (
         <g key={id} className={'overlayItem'}>
           <text x={x} y={y - 10}>
             {label}
           </text>
-          <rect x={x} y={y} width={width} height={height} rx={4} />
+          <rect
+            x={x}
+            y={y}
+            width={width}
+            height={height}
+            rx={4}
+            stroke={colors[index]}
+          />
         </g>
       ))}
     </svg>
