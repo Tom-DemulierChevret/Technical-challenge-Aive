@@ -11,7 +11,7 @@ export type BaseOverlayItem = {
     boxes: AppearanceBox[]
   }[]
   id: string
-  objectClass: string
+  objectClass: BaseOverItemType
 }
 
 export type AppearanceBox = {
@@ -26,4 +26,8 @@ export type AppearanceBox = {
     }
   }
   time: number
+}
+
+export enum BaseOverItemType {
+  Person = 'OBJECT_CLASS_PERSON',
 }

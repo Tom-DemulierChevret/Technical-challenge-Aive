@@ -8,7 +8,9 @@ import { AppearanceBox, BaseData } from './types'
 
 const App = () => {
   const [currentTime, setCurrentTime] = useState(0)
-  const [baseData, setBaseData] = useState<BaseData>(overlayPosition)
+  const [baseData, setBaseData] = useState<BaseData>(
+    overlayPosition as BaseData,
+  )
 
   const items: OverlayItem[] = useMemo(() => {
     return baseData.data.analysis.objects
@@ -31,7 +33,7 @@ const App = () => {
               appearanceBox.box.bottomRight.x - appearanceBox.box.topLeft.x,
             height:
               appearanceBox.box.bottomRight.y - appearanceBox.box.topLeft.y,
-            label: objectClass,
+            type: objectClass,
           }
         )
       })
