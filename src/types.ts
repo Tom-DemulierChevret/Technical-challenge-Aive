@@ -30,4 +30,5 @@ export type AppearanceBox = {
 
 export enum BaseOverItemType {
   Person = 'OBJECT_CLASS_PERSON',
+  Car = 'OBJECT_CLASS_CAR',
 }
