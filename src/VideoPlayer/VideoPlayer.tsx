@@ -1,4 +1,10 @@
-import React, { FunctionComponent, SyntheticEvent, useCallback } from 'react'
+import React, {
+  FunctionComponent,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react'
 import cx from 'classnames'
 import './VideoPlayer.scss'
 
@@ -13,6 +19,7 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({
   timeChange,
   renderingScaleChange,
 }) => {
+  const videoRef = useRef(null)
   const className = cx(classname)
 
   const onTimeUpdate = useCallback(
@@ -30,8 +37,21 @@ const VideoPlayer: FunctionComponent<VideoPlayerProps> = ({
     [renderingScaleChange],
   )
 
+  useEffect(() => {
+    function handleResize() {
+      if (videoRef.current) {
+        const videoElement = videoRef.current as HTMLVideoElement
+        renderingScaleChange(videoElement.scrollWidth / videoElement.videoWidth)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [renderingScaleChange])
+
   return (
     <video
+      ref={videoRef}
       className={className}
       controls
       src={'/data/porshe.mp4'}
